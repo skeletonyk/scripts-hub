@@ -48,9 +48,9 @@ output_fre = 1
 step_length = 0.001
 tot_unit = int(Unit_tot / output_fre)
 
-cam_tran = np.array([0, 0, 0])
+cam_tran = np.array([0.49999 , -0.866, 0])
 center_rot = np.array([20 , 20, 20])
-camera_dist = 4.5
+camera_dist = 45
 cam_0 = np.array([0, 0, 1]) * camera_dist
 
 
