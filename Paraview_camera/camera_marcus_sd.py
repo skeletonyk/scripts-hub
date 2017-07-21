@@ -56,7 +56,7 @@ cam_0 = np.array([0, 0, 1]) * camera_dist
 
 # Solving ODE for camera position~  --------------------------------
 t = [i*output_fre*step_length for i in range(0, tot_unit + 1)]
-cam_vec = odeint(func, cam_0, t)
+cam_vec = odeint(func, cam_0 + cam_tran, t)
 
 # Specify view_up_0
 # view_up_0 = np.cross(np.abs(rot_vec(0)), cam_vec[0])
@@ -77,7 +77,7 @@ for i in range(0, tot_unit + 1):
     key_t_perc = float(i) /tot_unit
     time = i*output_fre*step_length
     # ------------------------
-    camera = center_rot + cam_vec[i] + cam_tran
+    camera = center_rot + cam_vec[i]
 
 
     f.write(
@@ -122,7 +122,7 @@ mpl.rcParams['legend.fontsize'] = 10
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-cam_plot = center_rot + cam_vec + cam_tran
+cam_plot = center_rot + cam_vec
 ax.plot(cam_plot[:,0], cam_plot[:, 1], cam_plot[:, 2], label='camera vector')
 ax.legend()
 

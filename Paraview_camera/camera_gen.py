@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 # ---- The thing u need to change according to the input file -----
 def rot_vec(time):
-    time += 0.0000000001 
+    time += 0.0000000001
     # just to avoid all 0 case for calculating the view_up angle
     return np.array([np.pi/10 * math.sin(0.6 * time), 0, 0])
 # -----------------------------------------------------------------
@@ -51,13 +51,14 @@ center_rot = np.array([20 , 20, 20])
 camera_dist = 4.5
 cam_0 = np.array([0.5, math.sin(math.pi/6), -math.cos(math.pi/6)]) * camera_dist
 
-# Solving ODE for camera position~  --------------------------------
-t = [i*output_fre*step_length for i in range(0, tot_unit + 1)]
-cam_vec = odeint(func, cam_0, t)
 
 # Specify view_up_0
 view_up_0 = np.cross(np.abs(rot_vec(0)), cam_vec[0])
 view_up = odeint(func, view_up_0, t)
+
+# Solving ODE for camera position~  --------------------------------
+t = [i*output_fre*step_length for i in range(0, tot_unit + 1)]
+cam_vec = odeint(func, cam_0, t)
 # ------------------------------------------------------------------
 
 # ------------------------------------------------------------------
@@ -67,10 +68,10 @@ write_head()
 
 for i in range(0, tot_unit + 1):
     frame_nu = 5000 + i
-    key_t_perc = float(i) /tot_unit 
+    key_t_perc = float(i) /tot_unit
     time = i*output_fre*step_length
-    # ------------------------ 
-    camera = center_rot + cam_vec[i] + cam_tran 
+    # ------------------------
+    camera = center_rot + cam_vec[i] + cam_tran
 
 
     f.write(
