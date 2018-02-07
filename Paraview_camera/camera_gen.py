@@ -8,12 +8,24 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 
+def rotation_matrix(axis, theta):
+    """Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.
+    """
+    axis = np.asarray(axis)
+    axis = axis/math.sqrt(np.dot(axis, axis))
+    a = math.cos(theta/2.0)
+    b, c, d = -axis*math.sin(theta/2.0)
+    aa, bb, cc, dd = a*a, b*b, c*c, d*d
+    bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
+    return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
+                     [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
+                     [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
 
 # ---- The thing u need to change according to the input file -----
 def rot_vec(time):
     time += 0.0000000001
     # just to avoid all 0 case for calculating the view_up angle
-    return np.array([np.pi/10 * math.sin(0.6 * time), 0, 0])
+    return np.array([0.216473323190725 * math.cos(0.4134335932 * time), 0, 0])
 # -----------------------------------------------------------------
 
 def func(y, t):
@@ -40,30 +52,32 @@ cameraAnimationCue1 = GetCameraTrack(view=renderView1)
     return 0
 
 # Main -------------------------------------------------------------
-# Things u need to modify~
-Unit_tot = 22000
-output_fre = 128
-step_length = 0.001
+# Things u need to modify II
+Unit_tot = 20300
+output_fre = 140
+step_length = 0.002474873734153
 tot_unit = int(Unit_tot / output_fre)
 
 cam_tran = np.array([2, 0, 0])
 center_rot = np.array([20 , 20, 20])
-camera_dist = 4.5
-cam_0 = np.array([0.5, math.sin(math.pi/6), -math.cos(math.pi/6)]) * camera_dist
+camera_dist = 7
+cam_0 = np.array([0, 0, 1]) * camera_dist
 
 
 # Specify view_up_0
-view_up_0 = np.cross(np.abs(rot_vec(0)), cam_vec[0])
-view_up = odeint(func, view_up_0, t)
+view_up_temp = np.array([0,1,0]) #np.cross(np.abs(rot_vec(0)), cam_0)
+view_up_0 = np.dot(rotation_matrix([0,0,1],40*np.pi/180), view_up_temp)
 
 # Solving ODE for camera position~  --------------------------------
 t = [i*output_fre*step_length for i in range(0, tot_unit + 1)]
-cam_vec = odeint(func, cam_0, t)
+cam_vec = odeint(func, cam_0 + cam_tran, t)
+view_up = odeint(func, view_up_0, t)
+print(view_up_0)
 # ------------------------------------------------------------------
 
 # ------------------------------------------------------------------
 # writing eveything~
-f = open('camera_sine.py', 'w')
+f = open('camera_a40.py', 'w')
 write_head()
 
 for i in range(0, tot_unit + 1):
@@ -71,7 +85,7 @@ for i in range(0, tot_unit + 1):
     key_t_perc = float(i) /tot_unit
     time = i*output_fre*step_length
     # ------------------------
-    camera = center_rot + cam_vec[i] + cam_tran
+    camera = cam_vec[i] + center_rot
 
 
     f.write(
